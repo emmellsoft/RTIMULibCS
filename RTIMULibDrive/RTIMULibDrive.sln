@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTIMULibDrive", "RTIMULibDrive.csproj", "{B52059FE-A1AE-48BA-A314-F8B86A236660}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Debug|ARM.Build.0 = Debug|ARM
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Debug|ARM.Deploy.0 = Debug|ARM
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Release|ARM.ActiveCfg = Release|ARM
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Release|ARM.Build.0 = Release|ARM
+		{B52059FE-A1AE-48BA-A314-F8B86A236660}.Release|ARM.Deploy.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
