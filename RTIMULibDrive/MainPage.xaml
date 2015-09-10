@@ -10,11 +10,17 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock x:Name="Title" HorizontalAlignment="Left" Margin="10,50,0,0" TextWrapping="Wrap" Text="IMU data" VerticalAlignment="Top" Height="67" Width="1004" FontSize="48" TextAlignment="Left"/>
         <TextBlock x:Name="TextGyro" HorizontalAlignment="Left" Margin="10,130,0,0" TextWrapping="Wrap" Text="Gyro: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FFC71818" TextAlignment="Left"/>
-        <TextBlock x:Name="TextAccel" HorizontalAlignment="Left" Margin="10,195,0,0" TextWrapping="Wrap" Text="Accel: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF14D125" TextAlignment="Left"/>
-        <TextBlock x:Name="TextMag" HorizontalAlignment="Left" Margin="10,265,0,0" TextWrapping="Wrap" Text="Mag: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF1352C1" TextAlignment="Left"/>
-        <TextBlock x:Name="TextPose" HorizontalAlignment="Left" Margin="10,345,0,0" TextWrapping="Wrap" Text="Pose: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF13FF00" TextAlignment="Left"/>
-        <TextBlock x:Name="TextQPose" HorizontalAlignment="Left" Margin="10,415,0,0" TextWrapping="Wrap" Text="QPose: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF1300FF" TextAlignment="Left"/>
-        <TextBlock x:Name="TextStatus" HorizontalAlignment="Left" Margin="10,552,0,0" TextWrapping="Wrap" Text="Status: detecting IMU" VerticalAlignment="Top" Width="1004" FontSize="32" TextAlignment="Left"/>
-        <TextBlock x:Name="TextRate" HorizontalAlignment="Left" Margin="10,485,0,0" TextWrapping="Wrap" Text="Rate:" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FFFF00FF" TextAlignment="Left"/>
+        <TextBlock x:Name="TextAccel" HorizontalAlignment="Left" Margin="10,170,0,0" TextWrapping="Wrap" Text="Accel: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF14D125" TextAlignment="Left"/>
+        <TextBlock x:Name="TextMag" HorizontalAlignment="Left" Margin="10,210,0,0" TextWrapping="Wrap" Text="Mag: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF1352C1" TextAlignment="Left"/>
+        <TextBlock x:Name="TextPose" HorizontalAlignment="Left" Margin="10,270,0,0" TextWrapping="Wrap" Text="Pose: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF13FF00" TextAlignment="Left"/>
+        <TextBlock x:Name="TextQPose" HorizontalAlignment="Left" Margin="10,310,0,0" TextWrapping="Wrap" Text="QPose: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF1300FF" TextAlignment="Left"/>
+        <TextBlock x:Name="TextRate" HorizontalAlignment="Left" Margin="10,350,0,0" TextWrapping="Wrap" Text="Rate:" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FFFF00FF" TextAlignment="Left"/>
+        <TextBlock x:Name="TextPressure" HorizontalAlignment="Left" Margin="10,430,0,0" TextWrapping="Wrap" Text="Pressure: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF8022FF" TextAlignment="Left"/>
+        <TextBlock x:Name="TextHumidity" HorizontalAlignment="Left" Margin="10,465,0,0" TextWrapping="Wrap" Text="Humidity: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF8022FF" TextAlignment="Left"/>
+        <TextBlock x:Name="TextTemperature" HorizontalAlignment="Left" Margin="10,500,0,0" TextWrapping="Wrap" Text="Temperature: Not Initialized" VerticalAlignment="Top" Width="1004" FontSize="26.667" Foreground="#FF8022FF" TextAlignment="Left"/>
+        <TextBlock x:Name="IMUTextStatus" HorizontalAlignment="Left" Margin="10,605,0,0" TextWrapping="Wrap" Text="Status: detecting IMU" VerticalAlignment="Top" Width="1004" FontSize="27" TextAlignment="Left"/>
+        <TextBlock x:Name="PressureTextStatus" HorizontalAlignment="Left" Margin="10,646,0,0" TextWrapping="Wrap" Text="Status: detecting pressure sensor" VerticalAlignment="Top" Width="1004" FontSize="27" TextAlignment="Left"/>
+        <TextBlock x:Name="HumidityTextStatus" HorizontalAlignment="Left" Margin="10,687,0,0" TextWrapping="Wrap" Text="Status: detecting humidity sensor" VerticalAlignment="Top" Width="1004" FontSize="27" TextAlignment="Left"/>
+        <TextBlock x:Name="BiasTextStatus" HorizontalAlignment="Left" Margin="10,564,0,0" TextWrapping="Wrap" Text="Bias status:" VerticalAlignment="Top" Width="1004" FontSize="27" TextAlignment="Left"/>
     </Grid>
 </Page>

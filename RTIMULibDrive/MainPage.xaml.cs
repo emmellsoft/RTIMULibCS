@@ -47,24 +47,30 @@ namespace RTIMULibDrive
 
             var task = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                TextGyro.Text = string.Format("Gyro (radians/sec): x: {0:F4}, y: {1:F4}, z: {2:F4}",
+                TextGyro.Text = string.Format("Gyro (radians/sec):: x: {0:F4}, y: {1:F4}, z: {2:F4}",
                                 data.gyro.X, data.gyro.Y, data.gyro.Z);
-                TextAccel.Text = string.Format("Accel (g): x: {0:F4}, y: {1:F4}, z: {2:F4}",
+                TextAccel.Text = string.Format("Accel (g):: x: {0:F4}, y: {1:F4}, z: {2:F4}",
                                 data.accel.X, data.accel.Y, data.accel.Z);
-                TextMag.Text = string.Format("Mag (uT): x: {0:F4}, y: {1:F4}, z: {2:F4}",
+                TextMag.Text = string.Format("Mag (uT):: x: {0:F4}, y: {1:F4}, z: {2:F4}",
                                 data.mag.X, data.mag.Y, data.mag.Z);
 
                 TextPose.Text = RTMath.DisplayDegrees("Pose: ", data.fusionPose);
                 TextQPose.Text = RTMath.Display("QPose: ", data.fusionQPose);
 
-                TextStatus.Text = string.Format("Gyro bias: {0}, Mag cal: {1}",
-                    thread.GyroBiasValid ? "Valid" : "Invalid", thread.MagCalValid ? "Valid" : "Invalid");
+                BiasTextStatus.Text = string.Format("Gyro bias:: {0}, Mag cal: {1}",
+                    thread.GyroBiasValid ? "valid" : "invalid", thread.MagCalValid ? "valid" : "invalid");
 
-                if (thread.InitComplete)
+                TextPressure.Text = string.Format("Pressure (hPa):: {0:F4}", data.pressure);
+                TextHumidity.Text = string.Format("Humidity (%RH):: {0:F4}", data.humidity);
+                TextTemperature.Text = string.Format("Temperature (degC):: {0:F4}", data.temperature);
+
+                if (thread.IMUInitComplete)
                     TextRate.Text = string.Format("Rate: {0} samples per second", thread.SampleRate);
-                else
-                    TextStatus.Text = thread.ErrorMessage;
-                
+
+                IMUTextStatus.Text = "IMU status:: " + thread.IMUErrorMessage;
+                PressureTextStatus.Text = "Pressure status:: " + thread.PressureErrorMessage;
+                HumidityTextStatus.Text = "Temperature status:: " + thread.HumidityErrorMessage;
+
             });
         }
     }

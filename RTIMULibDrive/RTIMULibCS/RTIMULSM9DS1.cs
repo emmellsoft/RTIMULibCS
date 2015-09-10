@@ -262,14 +262,14 @@ namespace RTIMULibCS
 
             //  Set up the gyro/accel
 
-            if (!I2CWrite(mAccelGyro, LSM9DS1_CTRL8, 0x81)) {
+            if (!RTI2C.Write(mAccelGyro, LSM9DS1_CTRL8, 0x81)) {
                 ErrorMessage = "Failed to boot LSM9DS1";
                 return;
             }
 
             await Task.Delay(100);
 
-            if (!I2CRead(mAccelGyro, LSM9DS1_WHO_AM_I, oneByte)) {
+            if (!RTI2C.Read(mAccelGyro, LSM9DS1_WHO_AM_I, oneByte)) {
                 ErrorMessage = "Failed to read LSM9DS1 accel/gyro id";
                 return;
             }
@@ -287,7 +287,7 @@ namespace RTIMULibCS
 
             //  Set up the mag
 
-            if (!I2CRead(mMag, LSM9DS1_MAG_WHO_AM_I, oneByte)) {
+            if (!RTI2C.Read(mMag, LSM9DS1_MAG_WHO_AM_I, oneByte)) {
                 ErrorMessage = "Failed to read LSM9DS1 accel/mag id";
                 return;
             }
@@ -398,7 +398,7 @@ namespace RTIMULibCS
                     ErrorMessage = string.Format("Illegal LSM9DS1 gyro FSR code {0}", mLSM9DS1GyroFsr);
                     return false;
             }
-            if (!I2CWrite(mAccelGyro, LSM9DS1_CTRL1, ctrl1)) {
+            if (!RTI2C.Write(mAccelGyro, LSM9DS1_CTRL1, ctrl1)) {
                 ErrorMessage = "Failed to set LSM9DS1 gyro CTRL1";
                 return false;
             }
@@ -418,7 +418,7 @@ namespace RTIMULibCS
             //  Turn on hpf
             ctrl3 |= 0x40;
 
-            if (!I2CWrite(mAccelGyro, LSM9DS1_CTRL3, ctrl3)) {
+            if (!RTI2C.Write(mAccelGyro, LSM9DS1_CTRL3, ctrl3)) {
                 ErrorMessage = "Failed to set LSM9DS1 gyro CTRL3";
                 return false;
             }
@@ -465,7 +465,7 @@ namespace RTIMULibCS
 
             ctrl6 |= (byte)((mLSM9DS1AccelLpf) | (mLSM9DS1AccelFsr << 3));
 
-            if (!I2CWrite(mAccelGyro, LSM9DS1_CTRL6, ctrl6)) {
+            if (!RTI2C.Write(mAccelGyro, LSM9DS1_CTRL6, ctrl6)) {
                 ErrorMessage = "Failed to set LSM9DS1 accel CTRL6";
                 return false;
             }
@@ -480,7 +480,7 @@ namespace RTIMULibCS
             //Bug: Bad things happen.
             //ctrl7 = 0x05;
 
-            if (!I2CWrite(mAccelGyro, LSM9DS1_CTRL7, ctrl7)) {
+            if (!RTI2C.Write(mAccelGyro, LSM9DS1_CTRL7, ctrl7)) {
                 ErrorMessage = "Failed to set LSM9DS1 accel CTRL7";
                 return false;
             }
@@ -499,7 +499,7 @@ namespace RTIMULibCS
 
             ctrl1 = (byte)(mLSM9DS1CompassSampleRate << 2);
 
-            if (!I2CWrite(mMag, LSM9DS1_MAG_CTRL1, ctrl1)) {
+            if (!RTI2C.Write(mMag, LSM9DS1_MAG_CTRL1, ctrl1)) {
                 ErrorMessage = "Failed to set LSM9DS1 compass CTRL5";
                 return false;
             }
@@ -538,7 +538,7 @@ namespace RTIMULibCS
                     return false;
             }
 
-            if (!I2CWrite(mMag, LSM9DS1_MAG_CTRL2, ctrl2)) {
+            if (!RTI2C.Write(mMag, LSM9DS1_MAG_CTRL2, ctrl2)) {
                 ErrorMessage = "Failed to set LSM9DS1 compass CTRL6";
                 return false;
             }
@@ -547,7 +547,7 @@ namespace RTIMULibCS
 
         bool SetMagCTRL3()
         {
-            if (!I2CWrite(mMag, LSM9DS1_MAG_CTRL3, 0x00)) {
+            if (!RTI2C.Write(mMag, LSM9DS1_MAG_CTRL3, 0x00)) {
                 ErrorMessage = "Failed to set LSM9DS1 compass CTRL3";
                 return false;
             }
@@ -580,24 +580,24 @@ namespace RTIMULibCS
             mImuData.temperatureValid = false;
             mImuData.humidityValid = false;
 
-            if (!I2CRead(mAccelGyro, LSM9DS1_STATUS, status)) {
+            if (!RTI2C.Read(mAccelGyro, LSM9DS1_STATUS, status)) {
                 ErrorMessage = "Failed to read LSM9DS1 status";
                 return false;
             }
             if ((status[0] & 0x3) != 3)
                 return false;
 
-            if (!I2CRead(mAccelGyro, 0x80 + LSM9DS1_OUT_X_L_G, gyroData)) {
+            if (!RTI2C.Read(mAccelGyro, 0x80 + LSM9DS1_OUT_X_L_G, gyroData)) {
                 ErrorMessage = "Failed to read LSM9DS1 gyro data";
                 return false;
             }
 
-            if (!I2CRead(mAccelGyro, 0x80 + LSM9DS1_OUT_X_L_XL, accelData)) {
+            if (!RTI2C.Read(mAccelGyro, 0x80 + LSM9DS1_OUT_X_L_XL, accelData)) {
                 ErrorMessage = "Failed to read LSM9DS1 accel data";
                 return false;
             }
 
-            if (!I2CRead(mMag, 0x80 + LSM9DS1_MAG_OUT_X_L, magData)) {
+            if (!RTI2C.Read(mMag, 0x80 + LSM9DS1_MAG_OUT_X_L, magData)) {
                 ErrorMessage = "Failed to read LSM9DS1 compass data";
                 return false;
             }

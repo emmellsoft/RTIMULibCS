@@ -105,13 +105,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RTIMULibCS\RTFusion.cs" />
     <Compile Include="RTIMULibCS\RTFusionRTQF.cs" />
+    <Compile Include="RTIMULibCS\RTHumidityHTS221.cs" />
+    <Compile Include="RTIMULibCS\RTI2C.cs" />
     <Compile Include="RTIMULibCS\RTIMU.cs" />
     <Compile Include="RTIMULibCS\RTIMUData.cs" />
     <Compile Include="RTIMULibCS\RTIMULSM9DS1.cs" />
-    <Compile Include="RTIMULibCS\RTIMUThread.cs" />
     <Compile Include="RTIMULibCS\RTMath.cs" />
+    <Compile Include="RTIMULibCS\RTPressureLPS25H.cs" />
     <Compile Include="RTIMULibCS\RTQuaternion.cs" />
     <Compile Include="RTIMULibCS\RTVector3.cs" />
+    <Compile Include="RTIMUThread.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

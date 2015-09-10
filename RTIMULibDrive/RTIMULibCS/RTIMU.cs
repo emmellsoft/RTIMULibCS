@@ -365,31 +365,5 @@ namespace RTIMULibCS
             mImuData.mag.Z = mz;
             mImuData.timestamp = timestamp;
         }
-
-        public bool I2CWrite(I2cDevice device, byte reg, byte command)
-        {
-            byte[] val = new byte[2];
-
-            val[0] = reg;
-            val[1] = command;
-            try {
-                device.Write(val);
-                return true;
-            } catch {
-                return false;
-            }
-        }
-
-        public bool I2CRead(I2cDevice device, byte reg, byte[] data)
-        {
-            byte[] addr = new byte[1];
-            addr[0] = reg;
-            try {
-                device.WriteRead(addr, data);
-                return true;
-            } catch {
-                return false;
-            }
-        }
     }
 }

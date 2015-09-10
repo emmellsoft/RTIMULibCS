@@ -23,19 +23,29 @@
 
 using System.Threading.Tasks;
 
-namespace RTIMULibCS
+using RTIMULibCS;
+
+namespace RTIMULibDrive
 {
     public class RTIMUThread
     {
-        public bool InitComplete { get { return this.mImu.InitComplete; } }
-        public string ErrorMessage { get { return this.mImu.ErrorMessage; } }
+        public bool IMUInitComplete { get { return this.mImu.InitComplete; } }
+        public string IMUErrorMessage { get { return this.mImu.ErrorMessage; } }
         public RTIMUData GetIMUData {  get { lock(this) { return this.mImuData; } } }
         public bool GyroBiasValid { get { return this.mImu.GyroBiasValid; } }
         public bool MagCalValid { get { return this.mImu.MagCalValid; } }
         public int SampleRate {  get { return this.mSampleRate; } }
 
+        public bool HumidityInitComplete { get { return this.mHumidity.InitComplete; } }
+        public string HumidityErrorMessage { get { return this.mHumidity.ErrorMessage; } }
+
+        public bool PressureInitComplete { get { return this.mPressure.InitComplete; } }
+        public string PressureErrorMessage { get { return this.mPressure.ErrorMessage; } }
+
         private RTIMULSM9DS1 mImu = new RTIMULSM9DS1();
         private RTFusionRTQF mFusion = new RTFusionRTQF();
+        private RTHumidityHTS221 mHumidity = new RTHumidityHTS221();
+        private RTPressureLPS25H mPressure = new RTPressureLPS25H();
         private RTIMUData mImuData = new RTIMUData();
         private int mSampleCount = 0;
         private int mSampleRate = 0;
@@ -44,6 +54,9 @@ namespace RTIMULibCS
         public RTIMUThread()
         {
             mImu.IMUInit();
+            mPressure.PressureInit();
+            mHumidity.HumidityInit();
+
             mStartTime = System.DateTime.Now.Ticks;
 
             Task.Run(() =>
@@ -54,7 +67,14 @@ namespace RTIMULibCS
                         RTIMUData data;
                         while (mImu.IMURead(out data)) {
                             mSampleCount++;
+
+                            // collect all of the data
                             mFusion.NewIMUData(ref data);
+                            mHumidity.HumidityRead(ref data);
+                            mPressure.PressureRead(ref data);
+ 
+                            // data is now ready for procesing - just pass to display in this case
+
                             lock (this) {
                                 mImuData = data;
                             }
