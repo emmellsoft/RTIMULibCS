@@ -54,8 +54,8 @@ namespace RTIMULibDrive
                 TextMag.Text = string.Format("Mag (uT):: x: {0:F4}, y: {1:F4}, z: {2:F4}",
                                 data.mag.X, data.mag.Y, data.mag.Z);
 
-                TextPose.Text = RTMath.DisplayDegrees("Pose: ", data.fusionPose);
-                TextQPose.Text = RTMath.Display("QPose: ", data.fusionQPose);
+                TextPose.Text = RTMath.DisplayDegrees("Pose:", data.fusionPose);
+                TextQPose.Text = RTMath.Display("QPose:", data.fusionQPose);
 
                 BiasTextStatus.Text = string.Format("Gyro bias:: {0}, Mag cal: {1}",
                     thread.GyroBiasValid ? "valid" : "invalid", thread.MagCalValid ? "valid" : "invalid");
@@ -69,7 +69,7 @@ namespace RTIMULibDrive
 
                 IMUTextStatus.Text = "IMU status:: " + thread.IMUErrorMessage;
                 PressureTextStatus.Text = "Pressure status:: " + thread.PressureErrorMessage;
-                HumidityTextStatus.Text = "Temperature status:: " + thread.HumidityErrorMessage;
+                HumidityTextStatus.Text = "Humidity status:: " + thread.HumidityErrorMessage;
 
             });
         }
