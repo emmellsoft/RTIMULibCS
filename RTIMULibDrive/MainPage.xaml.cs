@@ -21,6 +21,7 @@
 //  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using Windows.UI.Xaml.Controls;
 using System.Threading;
 
@@ -41,11 +42,11 @@ namespace RTIMULibDrive
             periodicTimer = new Timer(this.TimerCallback, null, 0, 100);
          }
 
-        private void TimerCallback(object state)
+        private async void TimerCallback(object state)
         {
             RTIMUData data = thread.GetIMUData;
 
-            var task = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 TextGyro.Text = string.Format("Gyro (radians/sec):: x: {0:F4}, y: {1:F4}, z: {2:F4}",
                                 data.gyro.X, data.gyro.Y, data.gyro.Z);
