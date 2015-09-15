@@ -38,6 +38,9 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 		private readonly LSM9DS1Config _config;
 		private I2cDevice _accelGyroI2CDevice;
 		private I2cDevice _magI2CDevice;
+		private double _gyroScale;
+		private double _accelerationScale;
+		private double _magneticFieldScale;
 
 		public LSM9DS1ImuSensor(byte accelGyroI2CAddress, byte magI2CAddress, LSM9DS1Config config)
 		{
@@ -193,17 +196,17 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			{
 				case GyroFullScaleRange.Range250:
 					ctrl1 |= 0x00;
-					GyroScale = 0.00875 * MathSupport.DegreeToRad;
+					_gyroScale = 0.00875 * MathSupport.DegreeToRad;
 					break;
 
 				case GyroFullScaleRange.Range500:
 					ctrl1 |= 0x08;
-					GyroScale = 0.0175 * MathSupport.DegreeToRad;
+					_gyroScale = 0.0175 * MathSupport.DegreeToRad;
 					break;
 
 				case GyroFullScaleRange.Range2000:
 					ctrl1 |= 0x18;
-					GyroScale = 0.07 * MathSupport.DegreeToRad;
+					_gyroScale = 0.07 * MathSupport.DegreeToRad;
 					break;
 
 				default:
@@ -248,19 +251,19 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			switch (_config.AccelFullScaleRange)
 			{
 				case AccelFullScaleRange.Range2g:
-					AccelScale = 0.000061;
+					_accelerationScale = 0.000061;
 					break;
 
 				case AccelFullScaleRange.Range4g:
-					AccelScale = 0.000122;
+					_accelerationScale = 0.000122;
 					break;
 
 				case AccelFullScaleRange.Range8g:
-					AccelScale = 0.000244;
+					_accelerationScale = 0.000244;
 					break;
 
 				case AccelFullScaleRange.Range16g:
-					AccelScale = 0.000732;
+					_accelerationScale = 0.000732;
 					break;
 
 				default:
@@ -305,22 +308,22 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			{
 				case MagneticFullScaleRange.Range4Gauss:
 					ctrl2 = 0;
-					MagScale = 0.014;
+					_magneticFieldScale = 0.014;
 					break;
 
 				case MagneticFullScaleRange.Range8Gauss:
 					ctrl2 = 0x20;
-					MagScale = 0.029;
+					_magneticFieldScale = 0.029;
 					break;
 
 				case MagneticFullScaleRange.Range12Gauss:
 					ctrl2 = 0x40;
-					MagScale = 0.043;
+					_magneticFieldScale = 0.043;
 					break;
 
 				case MagneticFullScaleRange.Range16Gauss:
 					ctrl2 = 0x60;
-					MagScale = 0.058;
+					_magneticFieldScale = 0.058;
 					break;
 
 				default:
@@ -364,25 +367,22 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			var readings = new SensorReadings
 			{
 				Timestamp = DateTime.Now,
-				Gyro = MathSupport.ConvertToVector(gyroData, GyroScale, ByteOrder.LittleEndian),
+				Gyro = MathSupport.ConvertToVector(gyroData, _gyroScale, ByteOrder.LittleEndian),
 				GyroValid = true,
-				Acceleration = MathSupport.ConvertToVector(accelData, AccelScale, ByteOrder.LittleEndian),
+				Acceleration = MathSupport.ConvertToVector(accelData, _accelerationScale, ByteOrder.LittleEndian),
 				AccelerationValid = true,
-				MagneticField = MathSupport.ConvertToVector(magData, MagScale, ByteOrder.LittleEndian),
+				MagneticField = MathSupport.ConvertToVector(magData, _magneticFieldScale, ByteOrder.LittleEndian),
 				MagneticFieldValid = true
 			};
 
-			//  sort out gyro axes and correct for bias
-
+			// Sort out gyro axes and correct for bias
 			readings.Gyro.Z = -readings.Gyro.Z;
 
-			//  sort out accel data;
-
+			// Sort out accel data;
 			readings.Acceleration.X = -readings.Acceleration.X;
 			readings.Acceleration.Y = -readings.Acceleration.Y;
 
-			//  sort out mag axes
-
+			// Sort out mag axes
 			readings.MagneticField.X = -readings.MagneticField.X;
 			readings.MagneticField.Z = -readings.MagneticField.Z;
 

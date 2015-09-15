@@ -37,10 +37,8 @@ namespace RichardsTech.Sensors.Devices.HTS221
 
 		private I2cDevice _i2CDevice;
 
-		private double _temperatureM;       // temperature calibration slope
-		private double _temperatureC;       // temperature calibration y intercept
-		private double _humidityM;          // humidity calibration slope
-		private double _humidityC;          // humidity calibration y intercept
+		private Func<Int16, double> _temperatureConversionFunc;
+		private Func<Int16, double> _humidityConversionFunc;
 
 		public HTS221HumiditySensor(byte i2CAddress)
 		{
@@ -55,24 +53,42 @@ namespace RichardsTech.Sensors.Devices.HTS221
 
 			I2CSupport.Write(_i2CDevice, HTS221Defines.AV_CONF, 0x1b, "Failed to set HTS221 AV_CONF");
 
-			// Get calibration data
+			_temperatureConversionFunc = GetTemperatureConversionFunc();
 
-			byte temp0 = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T1_T0 + 0x80, "Failed to read HTS221 T1_T0");
+			_humidityConversionFunc = GetHumidityConversionFunc();
 
-			byte temp1 = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T0_C_8 + 0x80, "Failed to read HTS221 T0_C_8");
+			return true;
+		}
 
-			UInt16 T0_C_8 = (UInt16)((((UInt16)temp1 & 0x3) << 8) | (UInt16)temp0);
+		private Func<Int16, double> GetTemperatureConversionFunc()
+		{
+			byte tempRawMsb = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T1_T0 + 0x80, "Failed to read HTS221 T1_T0");
+
+			byte temp0Lsb = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T0_C_8 + 0x80, "Failed to read HTS221 T0_C_8");
+
+			UInt16 T0_C_8 = (UInt16)((((UInt16)tempRawMsb & 0x03) << 8) | (UInt16)temp0Lsb);
 			double T0 = T0_C_8 / 8.0;
 
-			temp0 = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T1_C_8 + 0x80, "Failed to read HTS221 T1_C_8");
+			byte temp1Lsb = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.T1_C_8 + 0x80, "Failed to read HTS221 T1_C_8");
 
-			UInt16 T1_C_8 = (UInt16)(((UInt16)(temp1 & 0xC) << 6) | (UInt16)temp0);
+			UInt16 T1_C_8 = (UInt16)(((UInt16)(tempRawMsb & 0x0C) << 6) | (UInt16)temp1Lsb);
 			double T1 = T1_C_8 / 8.0;
 
 			Int16 T0_OUT = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.T0_OUT + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 T0_OUT");
 
 			Int16 T1_OUT = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.T1_OUT + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 T1_OUT");
 
+			// Temperature calibration slope
+			double m = (T1 - T0) / (T1_OUT - T0_OUT);
+
+			// Temperature calibration y intercept
+			double b = T0 - (m * T0_OUT);
+
+			return rawTemperature => rawTemperature * m + b;
+		}
+
+		private Func<Int16, double> GetHumidityConversionFunc()
+		{
 			byte H0_H_2 = I2CSupport.Read8Bits(_i2CDevice, HTS221Defines.H0_H_2 + 0x80, "Failed to read HTS221 H0_H_2");
 			double H0 = H0_H_2 / 2.0;
 
@@ -83,12 +99,13 @@ namespace RichardsTech.Sensors.Devices.HTS221
 
 			Int16 H1_T0_OUT = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.H1_T0_OUT + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 H1_T_OUT");
 
-			_temperatureM = (T1 - T0) / (T1_OUT - T0_OUT);
-			_temperatureC = T0 - (_temperatureM * T0_OUT);
-			_humidityM = (H1 - H0) / (H1_T0_OUT - H0_T0_OUT);
-			_humidityC = H0 - (_humidityM * H0_T0_OUT);
+			// Humidity calibration slope
+			double m = (H1 - H0) / (H1_T0_OUT - H0_T0_OUT);
 
-			return true;
+			// Humidity calibration y intercept
+			double b = H0 - (m * H0_T0_OUT);
+
+			return rawHumidity => rawHumidity * m + b;
 		}
 
 		private async Task ConnectToI2CDevices()
@@ -132,15 +149,15 @@ namespace RichardsTech.Sensors.Devices.HTS221
 
 			if ((status & 0x02) == 0x02)
 			{
-				Int16 humidity = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.HUMIDITY_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 humidity");
-				readings.Humidity = humidity * _humidityM + _humidityC;
+				Int16 rawHumidity = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.HUMIDITY_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 humidity");
+				readings.Humidity = _humidityConversionFunc(rawHumidity);
 				readings.HumidityValid = true;
 			}
 
 			if ((status & 0x01) == 0x01)
 			{
-				Int16 temperature = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.TEMP_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 temperature");
-				readings.Temperature = temperature * _temperatureM + _temperatureC;
+				Int16 rawTemperature = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.TEMP_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 temperature");
+				readings.Temperature = _temperatureConversionFunc(rawTemperature);
 				readings.TemperatureValid = true;
 			}
 

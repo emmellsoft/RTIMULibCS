@@ -47,10 +47,6 @@ namespace RichardsTech.Sensors
 		protected int SampleRate;                                 // samples per second
 		protected long SampleInterval;                            // interval between samples in microseonds
 
-		protected double GyroScale;                               // used to get result in rads/sec
-		protected double AccelScale;                              // used to get results in gs
-		protected double MagScale;                                // used to get results in uT
-
 		protected ImuSensor()
 		{
 			AxisRotation = new AxisRotation();
