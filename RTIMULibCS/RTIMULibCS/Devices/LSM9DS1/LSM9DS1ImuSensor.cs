@@ -28,6 +28,9 @@ using Windows.Devices.I2c;
 
 namespace RichardsTech.Sensors.Devices.LSM9DS1
 {
+	/// <summary>
+	/// The LSM9DS1 IMU-sensor.
+	/// </summary>
 	public class LSM9DS1ImuSensor : ImuSensor
 	{
 		private readonly byte _accelGyroI2CAddress;
@@ -97,41 +100,28 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 
 		private async Task BootDevice()
 		{
-			if (!I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL8, 0x81))
-			{
-				throw new SensorException("Failed to boot LSM9DS1");
-			}
+			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL8, 0x81, "Failed to boot LSM9DS1");
 
 			await Task.Delay(100);
 		}
 
 		private void VerifyDeviceAccelGyroId()
 		{
-			byte[] oneByte = new byte[1];
+			byte id = I2CSupport.Read8Bits(_accelGyroI2CDevice, LSM9DS1Defines.WHO_AM_I, "Failed to read LSM9DS1 accel/gyro id");
 
-			if (!I2CSupport.Read(_accelGyroI2CDevice, LSM9DS1Defines.WHO_AM_I, oneByte))
+			if (id != LSM9DS1Defines.ID)
 			{
-				throw new SensorException("Failed to read LSM9DS1 accel/gyro id");
-			}
-
-			if (oneByte[0] != LSM9DS1Defines.ID)
-			{
-				throw new SensorException($"Incorrect LSM9DS1 gyro id {oneByte[0]}");
+				throw new SensorException($"Incorrect LSM9DS1 gyro id {id}");
 			}
 		}
 
 		private void VerifyDeviceMagId()
 		{
-			byte[] oneByte = new byte[1];
+			byte id = I2CSupport.Read8Bits(_magI2CDevice, LSM9DS1Defines.MAG_WHO_AM_I, "Failed to read LSM9DS1 mag id");
 
-			if (!I2CSupport.Read(_magI2CDevice, LSM9DS1Defines.MAG_WHO_AM_I, oneByte))
+			if (id != LSM9DS1Defines.MAG_ID)
 			{
-				throw new SensorException("Failed to read LSM9DS1 mag id");
-			}
-
-			if (oneByte[0] != LSM9DS1Defines.MAG_ID)
-			{
-				throw new SensorException($"Incorrect LSM9DS1 mag id {oneByte[0]}");
+				throw new SensorException($"Incorrect LSM9DS1 mag id {id}");
 			}
 		}
 
@@ -220,10 +210,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 					throw new SensorException($"Illegal LSM9DS1 gyro FSR code {_config.GyroFullScaleRange}");
 			}
 
-			if (!I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL1, ctrl1))
-			{
-				throw new SensorException("Failed to set LSM9DS1 gyro CTRL1");
-			}
+			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL1, ctrl1, "Failed to set LSM9DS1 gyro CTRL1");
 		}
 
 		private void SetGyroCtrl3()
@@ -239,10 +226,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			//  Turn on hpf
 			ctrl3 |= 0x40;
 
-			if (!I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL3, ctrl3))
-			{
-				throw new SensorException("Failed to set LSM9DS1 gyro CTRL3");
-			}
+			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL3, ctrl3, "Failed to set LSM9DS1 gyro CTRL3");
 		}
 
 		private void SetAccelCtrl6()
@@ -285,24 +269,16 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 
 			ctrl6 |= (byte)((accelLowPassFilterValue) | (accelSampleRateValue << 3));
 
-			if (!I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL6, ctrl6))
-			{
-				throw new SensorException("Failed to set LSM9DS1 accel CTRL6");
-			}
+			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL6, ctrl6, "Failed to set LSM9DS1 accel CTRL6");
 		}
 
 		private void SetAccelCtrl7()
 		{
-			byte ctrl7;
-
-			ctrl7 = 0x00;
+			byte ctrl7 = 0x00;
 			//Bug: Bad things happen.
-			//ctrl7 = 0x05;
+			//byte ctrl7 = 0x05;
 
-			if (!I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL7, ctrl7))
-			{
-				throw new SensorException("Failed to set LSM9DS1 accel CTRL7");
-			}
+			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL7, ctrl7, "Failed to set LSM9DS1 accel CTRL7");
 		}
 
 		private void SetMagCtrl1()
@@ -316,10 +292,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 
 			byte ctrl1 = (byte)(compassSampleRateValue << 2);
 
-			if (!I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL1, ctrl1))
-			{
-				throw new SensorException("Failed to set LSM9DS1 compass CTRL5");
-			}
+			I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL1, ctrl1, "Failed to set LSM9DS1 compass CTRL5");
 		}
 
 		private void SetMagCtrl2()
@@ -354,18 +327,12 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 					throw new SensorException($"Illegal LSM9DS1 compass FSR code {_config.MagneticFullScaleRange}");
 			}
 
-			if (!I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL2, ctrl2))
-			{
-				throw new SensorException("Failed to set LSM9DS1 compass CTRL6");
-			}
+			I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL2, ctrl2, "Failed to set LSM9DS1 compass CTRL6");
 		}
 
 		private void SetMagCtrl3()
 		{
-			if (!I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL3, 0x00))
-			{
-				throw new SensorException("Failed to set LSM9DS1 compass CTRL3");
-			}
+			I2CSupport.Write(_magI2CDevice, LSM9DS1Defines.MAG_CTRL3, 0x00, "Failed to set LSM9DS1 compass CTRL3");
 		}
 
 		public int GetPollInterval()
@@ -373,46 +340,35 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			return (400 / SampleRate);
 		}
 
+		/// <summary>
+		/// Tries to update the readings.
+		/// Returns true if new readings are available, otherwise false.
+		/// An exception is thrown if something goes wrong.
+		/// </summary>
 		public override bool Update()
 		{
-			byte[] status = new byte[1];
-			if (!I2CSupport.Read(_accelGyroI2CDevice, LSM9DS1Defines.STATUS, status))
-			{
-				throw new SensorException("Failed to read LSM9DS1 status");
-			}
+			byte status = I2CSupport.Read8Bits(_accelGyroI2CDevice, LSM9DS1Defines.STATUS, "Failed to read LSM9DS1 status");
 
-			if ((status[0] & 0x3) != 3)
+			if ((status & 0x03) != 0x03)
 			{
 				// Data not yet available
 				return false;
 			}
 
-			byte[] gyroData = new byte[6];
-			if (!I2CSupport.Read(_accelGyroI2CDevice, 0x80 + LSM9DS1Defines.OUT_X_L_G, gyroData))
-			{
-				throw new SensorException("Failed to read LSM9DS1 gyro data");
-			}
+			byte[] gyroData = I2CSupport.ReadBytes(_accelGyroI2CDevice, 0x80 + LSM9DS1Defines.OUT_X_L_G, 6, "Failed to read LSM9DS1 gyro data");
 
-			byte[] accelData = new byte[6];
-			if (!I2CSupport.Read(_accelGyroI2CDevice, 0x80 + LSM9DS1Defines.OUT_X_L_XL, accelData))
-			{
-				throw new SensorException("Failed to read LSM9DS1 accel data");
-			}
+			byte[] accelData = I2CSupport.ReadBytes(_accelGyroI2CDevice, 0x80 + LSM9DS1Defines.OUT_X_L_XL, 6, "Failed to read LSM9DS1 accel data");
 
-			byte[] magData = new byte[6];
-			if (!I2CSupport.Read(_magI2CDevice, 0x80 + LSM9DS1Defines.MAG_OUT_X_L, magData))
-			{
-				throw new SensorException("Failed to read LSM9DS1 compass data");
-			}
+			byte[] magData = I2CSupport.ReadBytes(_magI2CDevice, 0x80 + LSM9DS1Defines.MAG_OUT_X_L, 6, "Failed to read LSM9DS1 compass data");
 
 			var readings = new SensorReadings
 			{
 				Timestamp = DateTime.Now,
-				Gyro = MathSupport.ConvertToVector(gyroData, GyroScale, false),
+				Gyro = MathSupport.ConvertToVector(gyroData, GyroScale, ByteOrder.LittleEndian),
 				GyroValid = true,
-				Acceleration = MathSupport.ConvertToVector(accelData, AccelScale, false),
+				Acceleration = MathSupport.ConvertToVector(accelData, AccelScale, ByteOrder.LittleEndian),
 				AccelerationValid = true,
-				MagneticField = MathSupport.ConvertToVector(magData, MagScale, false),
+				MagneticField = MathSupport.ConvertToVector(magData, MagScale, ByteOrder.LittleEndian),
 				MagneticFieldValid = true
 			};
 
@@ -423,12 +379,12 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			//  sort out accel data;
 
 			readings.Acceleration.X = -readings.Acceleration.X;
-			readings.Acceleration.Y = -readings.Acceleration.Y;	
+			readings.Acceleration.Y = -readings.Acceleration.Y;
 
 			//  sort out mag axes
 
 			readings.MagneticField.X = -readings.MagneticField.X;
-			readings.MagneticField.Z = -readings.MagneticField.Z; 
+			readings.MagneticField.Z = -readings.MagneticField.Z;
 
 			AssignNewReadings(readings);
 			return true;

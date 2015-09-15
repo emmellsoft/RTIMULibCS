@@ -25,6 +25,9 @@ using System;
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// An exception thrown by the sensor code
+	/// </summary>
 	public class SensorException : Exception
 	{
 		public SensorException(string message)

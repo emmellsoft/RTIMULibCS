@@ -1,5 +1,8 @@
 namespace RichardsTech.Sensors.Devices.LSM9DS1
 {
+	/// <summary>
+	/// Configuration of the LSM9DS1 IMU-sensor.
+	/// </summary>
 	public class LSM9DS1Config
 	{
 		public LSM9DS1Config()

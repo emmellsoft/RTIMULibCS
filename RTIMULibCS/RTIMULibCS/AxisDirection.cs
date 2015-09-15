@@ -23,6 +23,9 @@
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// Direction of axis
+	/// </summary>
 	public enum AxisDirection
 	{
 		Default = 0,

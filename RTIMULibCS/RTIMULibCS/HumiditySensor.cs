@@ -23,6 +23,9 @@
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// A generic humidity sensor.
+	/// </summary>
 	public abstract class HumiditySensor : Sensor
 	{
 		protected HumiditySensor()

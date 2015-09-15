@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// A generic sensor.
+	/// </summary>
 	public abstract class Sensor
 	{
 		protected Sensor()
@@ -32,22 +35,26 @@ namespace RichardsTech.Sensors
 		}
 
 		/// <summary>
-		/// True when init has completed
+		/// Has the sensor been initialized?
 		/// </summary>
 		public bool Initiated
 		{ get; private set; }
 
 		/// <summary>
-		/// The retained version of the sensor readings
+		/// The last sensor readings.
 		/// </summary>
 		public SensorReadings Readings
 		{ get; private set; }
 
-		public async Task<bool> InitAsync()
+		/// <summary>
+		/// Initiates the sensor.
+		/// If failing, an exception is thrown.
+		/// </summary>
+		public async Task InitAsync()
 		{
 			if (Initiated)
 			{
-				return true;
+				return;
 			}
 
 			bool initiated = await InitDeviceAsync();
@@ -58,8 +65,6 @@ namespace RichardsTech.Sensors
 			}
 
 			Initiated = initiated;
-
-			return initiated;
 		}
 
 		protected abstract Task<bool> InitDeviceAsync();
@@ -82,6 +87,11 @@ namespace RichardsTech.Sensors
 		{
 		}
 
+		/// <summary>
+		/// Tries to update the readings.
+		/// Returns true if new readings are available, otherwise false.
+		/// An exception is thrown if something goes wrong.
+		/// </summary>
 		public abstract bool Update();
 	}
 }

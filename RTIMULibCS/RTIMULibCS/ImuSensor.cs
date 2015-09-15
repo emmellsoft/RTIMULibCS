@@ -25,6 +25,9 @@ using System;
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// A generic IMU sensor.
+	/// </summary>
 	public abstract class ImuSensor : Sensor
 	{
 		private double _gyroLearningAlpha;                        // gyro bias rapid learning rate
@@ -307,6 +310,9 @@ namespace RichardsTech.Sensors
 			}
 		}
 
+		/// <summary>
+		/// Assign a new reading from an external source
+		/// </summary>
 		public void SetExtData(
 			double gx,
 			double gy,

@@ -75,6 +75,9 @@ namespace RichardsTech.Sensors
 			Direction = AxisDirection.Default;
 		}
 
+		/// <summary>
+		/// The current direction of the axis.
+		/// </summary>
 		public AxisDirection Direction
 		{
 			get
@@ -155,6 +158,10 @@ namespace RichardsTech.Sensors
 			}
 		}
 
+		/// <summary>
+		/// Rotates a vector according to the current axis directions.
+		/// </summary>
+		/// <param name="vector">The vector to rotate.</param>
 		public Vector3 Rotate(Vector3 vector)
 		{
 			Vector3 original = vector;

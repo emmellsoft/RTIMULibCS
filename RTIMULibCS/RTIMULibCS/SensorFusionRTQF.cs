@@ -107,7 +107,7 @@ namespace RichardsTech.Sensors
 			StateQ.Normalize();
 		}
 
-		public void ProcessNewImuReadings(ref SensorReadings imuReadings)
+		public SensorReadings ProcessNewImuReadings(SensorReadings imuReadings)
 		{
 			SampleNumber++;
 
@@ -154,6 +154,8 @@ namespace RichardsTech.Sensors
 			imuReadings.FusionQPoseValid = true;
 			imuReadings.FusionPose = FusionPose;
 			imuReadings.FusionQPose = FusionQPose;
-		}
+
+			return imuReadings;
+        }
 	}
 }

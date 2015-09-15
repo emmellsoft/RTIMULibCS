@@ -25,6 +25,9 @@ using System;
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// Math support for the sensors
+	/// </summary>
 	public static class MathSupport
 	{
 		public const double DegreeToRad = Math.PI / 180.0;
@@ -74,21 +77,25 @@ namespace RichardsTech.Sensors
 			return result;
 		}
 
-		public static Vector3 ConvertToVector(byte[] rawData, double scale, bool bigEndian)
+		public static Vector3 ConvertToVector(byte[] rawData, double scale, ByteOrder byteOrder)
 		{
-			if (bigEndian)
+			switch (byteOrder)
 			{
-				return new Vector3(
-					((UInt16)(((UInt16)rawData[0] << 8) | (UInt16)rawData[1])) * scale,
-					((Int16)(((UInt16)rawData[2] << 8) | (UInt16)rawData[3])) * scale,
-					((Int16)(((UInt16)rawData[4] << 8) | (UInt16)rawData[5])) * scale);
+				case ByteOrder.BigEndian:
+					return new Vector3(
+						((UInt16)(((UInt16)rawData[0] << 8) | (UInt16)rawData[1])) * scale,
+						((Int16)(((UInt16)rawData[2] << 8) | (UInt16)rawData[3])) * scale,
+						((Int16)(((UInt16)rawData[4] << 8) | (UInt16)rawData[5])) * scale);
+
+				case ByteOrder.LittleEndian:
+					return new Vector3(
+						((Int16)(((UInt16)rawData[1] << 8) | (UInt16)rawData[0])) * scale,
+						((Int16)(((UInt16)rawData[3] << 8) | (UInt16)rawData[2])) * scale,
+						((Int16)(((UInt16)rawData[5] << 8) | (UInt16)rawData[4])) * scale);
+
+				default:
+					throw new SensorException($"Unsupported byte order {byteOrder}");
 			}
-
-
-			return new Vector3(
-				((Int16)(((UInt16)rawData[1] << 8) | (UInt16)rawData[0])) * scale,
-				((Int16)(((UInt16)rawData[3] << 8) | (UInt16)rawData[2])) * scale,
-				((Int16)(((UInt16)rawData[5] << 8) | (UInt16)rawData[4])) * scale);
 		}
 	}
 }

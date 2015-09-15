@@ -28,6 +28,9 @@ using Windows.Devices.I2c;
 
 namespace RichardsTech.Sensors.Devices.LPS25H
 {
+	/// <summary>
+	/// The LPS25H pressure-sensor
+	/// </summary>
 	public class LPS25HPressureSensor : PressureSensor
 	{
 		private readonly byte _i2CAddress;
@@ -42,25 +45,13 @@ namespace RichardsTech.Sensors.Devices.LPS25H
 		{
 			await ConnectToI2CDevices();
 
-			if (!I2CSupport.Write(_i2CDevice, LPS25HDefines.CTRL_REG_1, 0xc4))
-			{
-				throw new SensorException("Failed to set LPS25H CTRL_REG_1");
-			}
+			I2CSupport.Write(_i2CDevice, LPS25HDefines.CTRL_REG_1, 0xc4, "Failed to set LPS25H CTRL_REG_1");
 
-			if (!I2CSupport.Write(_i2CDevice, LPS25HDefines.RES_CONF, 0x05))
-			{
-				throw new SensorException("Failed to set LPS25H RES_CONF");
-			}
+			I2CSupport.Write(_i2CDevice, LPS25HDefines.RES_CONF, 0x05, "Failed to set LPS25H RES_CONF");
 
-			if (!I2CSupport.Write(_i2CDevice, LPS25HDefines.FIFO_CTRL, 0xc0))
-			{
-				throw new SensorException("Failed to set LPS25H FIFO_CTRL");
-			}
+			I2CSupport.Write(_i2CDevice, LPS25HDefines.FIFO_CTRL, 0xc0, "Failed to set LPS25H FIFO_CTRL");
 
-			if (!I2CSupport.Write(_i2CDevice, LPS25HDefines.CTRL_REG_2, 0x40))
-			{
-				throw new SensorException("Failed to set LPS25H CTRL_REG_2");
-			}
+			I2CSupport.Write(_i2CDevice, LPS25HDefines.CTRL_REG_2, 0x40, "Failed to set LPS25H CTRL_REG_2");
 
 			return true;
 		}
@@ -90,41 +81,33 @@ namespace RichardsTech.Sensors.Devices.LPS25H
 			}
 		}
 
+		/// <summary>
+		/// Tries to update the readings.
+		/// Returns true if new readings are available, otherwise false.
+		/// An exception is thrown if something goes wrong.
+		/// </summary>
 		public override bool Update()
 		{
-			byte[] oneByte = new byte[1];
-			byte[] twoByte = new byte[2];
-			byte[] threeByte = new byte[3];
-
-			if (!I2CSupport.Read(_i2CDevice, LPS25HDefines.STATUS_REG, oneByte))
-			{
-				throw new SensorException("Failed to read LPS25H status");
-			}
+			byte status = I2CSupport.Read8Bits(_i2CDevice, LPS25HDefines.STATUS_REG, "Failed to read LPS25H status");
 
 			var readings = new SensorReadings
 			{
 				Timestamp = DateTime.Now
 			};
 
-			if ((oneByte[0] & 0x02) == 0x02)
+			if ((status & 0x02) == 0x02)
 			{
-				if (!I2CSupport.Read(_i2CDevice, LPS25HDefines.PRESS_OUT_XL + 0x80, threeByte))
-				{
-					throw new SensorException("Failed to read LPS25H pressure");
-				}
+				Int32 rawPressure = (Int32)I2CSupport.Read24Bits(_i2CDevice, LPS25HDefines.PRESS_OUT_XL + 0x80, ByteOrder.LittleEndian, "Failed to read LPS25H pressure");
 
-				readings.Pressure = ((((UInt32)threeByte[2]) << 16) | (((UInt32)threeByte[1]) << 8) | (UInt32)threeByte[0]) / 4096.0;
+				readings.Pressure = rawPressure / 4096.0;
 				readings.PressureValid = true;
 			}
 
-			if ((oneByte[0] & 0x01) == 0x01)
+			if ((status & 0x01) == 0x01)
 			{
-				if (!I2CSupport.Read(_i2CDevice, LPS25HDefines.TEMP_OUT_L + 0x80, twoByte))
-				{
-					throw new SensorException("Failed to read LPS25H temperature");
-				}
+				Int16 rawTemperature = (Int16)I2CSupport.Read16Bits(_i2CDevice, LPS25HDefines.TEMP_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read LPS25H temperature");
 
-				readings.Temperature = (Int16)((((UInt16)twoByte[1]) << 8) | (UInt16)twoByte[0]) / 480.0 + 42.5;
+				readings.Temperature = rawTemperature / 480.0 + 42.5;
 				readings.TemperatureValid = true;
 			}
 

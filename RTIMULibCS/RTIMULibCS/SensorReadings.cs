@@ -25,6 +25,9 @@ using System;
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// The various values from a sensor reading.
+	/// </summary>
 	public struct SensorReadings
 	{
 		/// <summary>

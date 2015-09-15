@@ -23,6 +23,9 @@
 
 namespace RichardsTech.Sensors
 {
+	/// <summary>
+	/// A generic pressure sensor.
+	/// </summary>
 	public abstract class PressureSensor : Sensor
 	{
 		protected PressureSensor()
