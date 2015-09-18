@@ -32,9 +32,9 @@ namespace RichardsTech.Sensors
 		{
 			try
 			{
-				byte[] val = { reg, command };
+				byte[] buffer = { reg, command };
 
-				device.Write(val);
+				device.Write(buffer);
 			}
 			catch (Exception exception)
 			{

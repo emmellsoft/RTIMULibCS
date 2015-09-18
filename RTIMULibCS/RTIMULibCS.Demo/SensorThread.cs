@@ -22,6 +22,7 @@
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using RichardsTech.Sensors;
 using RichardsTech.Sensors.Devices.HTS221;
@@ -30,15 +31,13 @@ using RichardsTech.Sensors.Devices.LSM9DS1;
 
 namespace RTIMULibCS.Demo
 {
-	public class SensorThread
+	public class SensorThread : IDisposable
 	{
 		private readonly object _syncObj = new object();
-
+		private readonly ManualResetEvent _loopStoppedEvent = new ManualResetEvent(false);
 		private readonly LSM9DS1ImuSensor _imuSensor;
 		private readonly HTS221HumiditySensor _humiditySensor;
 		private readonly LPS25HPressureSensor _pressureSensor;
-		private readonly SensorFusionRTQF _fusion = new SensorFusionRTQF();
-		private SensorReadings _fusionReadings;
 		private int _imuSampleCount;
 		private int _pressureSampleCount;
 		private int _humiditySampleCount;
@@ -48,17 +47,33 @@ namespace RTIMULibCS.Demo
 		private string _imuErrorMessage;
 		private string _pressureErrorMessage;
 		private string _humidityErrorMessage;
+		private bool _stopLoop;
 
 		public SensorThread()
 		{
 			var lsm9Ds1Config = new LSM9DS1Config();
-			_imuSensor = new LSM9DS1ImuSensor(LSM9DS1Defines.ADDRESS0, LSM9DS1Defines.MAG_ADDRESS0, lsm9Ds1Config);
+
+			_imuSensor = new LSM9DS1ImuSensor(
+				LSM9DS1Defines.ADDRESS0,
+				LSM9DS1Defines.MAG_ADDRESS0,
+				lsm9Ds1Config,
+				new SensorFusionRTQF());
 
 			_humiditySensor = new HTS221HumiditySensor(HTS221Defines.ADDRESS);
 
 			_pressureSensor = new LPS25HPressureSensor(LPS25HDefines.ADDRESS0);
 
 			Start();
+		}
+
+		public void Dispose()
+		{
+			_stopLoop = true;
+			_loopStoppedEvent.WaitOne();
+
+			_imuSensor.Dispose();
+			_humiditySensor.Dispose();
+			_pressureSensor.Dispose();
 		}
 
 		private void Start()
@@ -92,7 +107,7 @@ namespace RTIMULibCS.Demo
 			DateTime startTime = DateTime.Now;
 			DateTime oneSecondAfterStartTime = startTime.AddSeconds(1);
 
-			while (true)
+			while (!_stopLoop)
 			{
 				Task.Delay(2);
 
@@ -103,7 +118,6 @@ namespace RTIMULibCS.Demo
 				{
 					lock (_syncObj)
 					{
-						_fusionReadings = _fusion.ProcessNewImuReadings(readings);
 						_imuSampleCount++;
 					}
 				}
@@ -147,6 +161,8 @@ namespace RTIMULibCS.Demo
 					}
 				}
 			}
+
+			_loopStoppedEvent.Set();
 		}
 
 		private static bool TryReadSensor(
@@ -217,20 +233,6 @@ namespace RTIMULibCS.Demo
 					ErrorMessage = _humidityErrorMessage ?? string.Empty,
 					Readings = _humiditySensor.Readings,
 					SampleRate = _humiditySampleRate,
-				};
-			}
-		}
-
-		public SensorData GetFusionSensorData()
-		{
-			lock (_syncObj)
-			{
-				return new SensorData
-				{
-					Initiated = true,
-					ErrorMessage = "",
-					Readings = _fusionReadings,
-					SampleRate = -1
 				};
 			}
 		}

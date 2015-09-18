@@ -47,7 +47,6 @@ namespace RTIMULibCS.Demo
 			ImuSensorData imuSensorData = _sensorThread.GetImuSensorData();
 			SensorData pressureSensorData = _sensorThread.GetPressureSensorData();
 			SensorData humiditySensorData = _sensorThread.GetHumiditySensorData();
-			SensorData fusionSensorData = _sensorThread.GetFusionSensorData();
 
 			ImuInitiated.Text = imuSensorData.Initiated ? "Yes" : "No";
 			ImuError.Text = imuSensorData.ErrorMessage;
@@ -58,8 +57,8 @@ namespace RTIMULibCS.Demo
 			ImuGyroBiasValid.Text = imuSensorData.GyroBiasValid ? "Yes" : "No";
 			ImuMagCalValid.Text = imuSensorData.MagCalValid ? "Yes" : "No";
 
-			FusionPose.Text = ReadingToString(fusionSensorData.Readings.FusionPoseValid, fusionSensorData.Readings.FusionPose, true, "");
-			FusionQPose.Text = ReadingToString(fusionSensorData.Readings.FusionQPoseValid, fusionSensorData.Readings.FusionQPose, "");
+			FusionPose.Text = ReadingToString(imuSensorData.Readings.FusionPoseValid, imuSensorData.Readings.FusionPose, true, "");
+			FusionQPose.Text = ReadingToString(imuSensorData.Readings.FusionQPoseValid, imuSensorData.Readings.FusionQPose, "");
 
 			PressureInitiated.Text = pressureSensorData.Initiated ? "Yes" : "No";
 			PressureError.Text = pressureSensorData.ErrorMessage;

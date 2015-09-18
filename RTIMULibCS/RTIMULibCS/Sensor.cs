@@ -21,6 +21,7 @@
 //  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 
 namespace RichardsTech.Sensors
@@ -28,9 +29,13 @@ namespace RichardsTech.Sensors
 	/// <summary>
 	/// A generic sensor.
 	/// </summary>
-	public abstract class Sensor
+	public abstract class Sensor : IDisposable
 	{
 		protected Sensor()
+		{
+		}
+
+		public virtual void Dispose()
 		{
 		}
 
@@ -45,6 +50,11 @@ namespace RichardsTech.Sensors
 		/// </summary>
 		public SensorReadings Readings
 		{ get; private set; }
+
+		/// <summary>
+		/// Event fired when the readings has changed.
+		/// </summary>
+		public event EventHandler OnReadingsChanged;
 
 		/// <summary>
 		/// Initiates the sensor.
@@ -81,6 +91,8 @@ namespace RichardsTech.Sensors
 			}
 
 			Readings = readings;
+
+			OnReadingsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual void ProcessReadings(ref SensorReadings readings)
