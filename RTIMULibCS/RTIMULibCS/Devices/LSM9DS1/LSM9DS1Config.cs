@@ -54,7 +54,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 		/// The accel full scale range
 		/// </summary>
 		public AccelFullScaleRange AccelFullScaleRange
-		{ get; private set; }
+		{ get; set; }
 
 		/// <summary>
 		/// The accel low pass filter

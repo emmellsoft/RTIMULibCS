@@ -282,7 +282,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 					throw new SensorException($"Illegal LSM9DS1 accel FSR code {_config.AccelFullScaleRange}");
 			}
 
-			ctrl6 |= (byte)((accelLowPassFilterValue) | (accelSampleRateValue << 3));
+			ctrl6 |= (byte)((accelLowPassFilterValue) | ((byte)_config.AccelFullScaleRange << 3));
 
 			I2CSupport.Write(_accelGyroI2CDevice, LSM9DS1Defines.CTRL6, ctrl6, "Failed to set LSM9DS1 accel CTRL6");
 		}
