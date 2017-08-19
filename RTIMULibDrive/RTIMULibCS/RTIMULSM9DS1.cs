@@ -116,7 +116,7 @@ namespace RTIMULibCS
 
         public const byte LSM9DS1_GYRO_FSR_250 = 0;
         public const byte LSM9DS1_GYRO_FSR_500 = 1;
-        public const byte LSM9DS1_GYRO_FSR_2000 = 2;
+        public const byte LSM9DS1_GYRO_FSR_2000 = 3;
 
         //  Gyro high pass filter defines
 
